@@ -122,15 +122,15 @@ lateinit var locationString : String
         }
         fusedLocationProviderClient.lastLocation.addOnCompleteListener { task->
 
-            val location = task.result
+            val location = task.result  // location is the lastLocation given by the client
 
-            if(location != null){
-               try{
+            if(location != null){ // check that a location was given i.e not null
+               try{ // translate location to address using geocoder object set to default Locale for the phone
                    val geocoder = Geocoder(this, Locale.getDefault())
 
                    val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
 
-                   //show address in textView location_holder
+                   //show address in textView location_holder and save address to the lateint var for later use
                    locationString = address[0].getAddressLine(0)
                    binding.locationHolder.text = locationString
 
