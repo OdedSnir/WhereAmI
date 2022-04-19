@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 lateinit var binding : ActivityMainBinding
 lateinit var locationRequest: LocationRequest
 lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+lateinit var locationString : String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -130,7 +131,8 @@ lateinit var fusedLocationProviderClient: FusedLocationProviderClient
                    val address = geocoder.getFromLocation(location.latitude, location.longitude, 1)
 
                    //show address in textView location_holder
-                   binding.locationHolder.text = address[0].getAddressLine(0)
+                   locationString = address[0].getAddressLine(0)
+                   binding.locationHolder.text = locationString
 
 
 
