@@ -1,11 +1,14 @@
 package com.example.whereami
 
 import android.Manifest
+import android.content.DialogInterface
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatCallback
 import androidx.core.app.ActivityCompat
 import com.example.whereami.databinding.ActivityMainBinding
@@ -40,16 +43,34 @@ lateinit var locationString : String
 
     private fun checkLocationPermission() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(this, "location available", Toast.LENGTH_SHORT).show()
             // permission is allready granted
             checkGPS()
 
         }else{
-
-            // permission is not granted
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
-
+            requestLocationPermission()
         }
     }
+
+    private fun requestLocationPermission(){
+        if((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_FINE_LOCATION)) or (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED)){
+            Toast.makeText(this, "you have denied permission to location", Toast.LENGTH_SHORT).show()
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Permission needed")
+            builder.setMessage("This permission is needed to get current location and send it later on.")
+            builder.setPositiveButton("ok", DialogInterface.OnClickListener { dialogInterface, witch ->
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+            })
+            builder.setNegativeButton("cancel", DialogInterface.OnClickListener { dialogInterface, witch ->
+                dialogInterface.dismiss()
+            })
+            builder.create().show()
+        }
+        else{
+            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 100)
+        }
+    }
+
 
     private fun checkGPS(){
         locationRequest = LocationRequest.create()
