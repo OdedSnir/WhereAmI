@@ -7,16 +7,20 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatCallback
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.whereami.databinding.ActivityMainBinding
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
@@ -24,6 +28,11 @@ lateinit var binding : ActivityMainBinding
 lateinit var locationRequest: LocationRequest
 lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 lateinit var locationString : String
+
+private lateinit var recyclerView: RecyclerView
+private lateinit var contactArrayList: ArrayList<Contact>
+lateinit var name: String
+lateinit var  number: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -47,7 +56,7 @@ lateinit var locationString : String
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
             Toast.makeText(this, "contact list available", Toast.LENGTH_SHORT).show()
             // permission is allready granted
-            //getContacts()
+            readContacts()
 
         }else{
             requestContactPermission()
@@ -74,9 +83,28 @@ lateinit var locationString : String
         }
     }
 
-    private fun getContacts() {
-        TODO("Not yet implemented")
+    private fun readContacts() {
+        contactArrayList = ArrayList()
+        val contacts = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
 
+        if (contacts != null) {
+            val name_index = contacts?.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            val number_index = contacts?.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            if( (contacts.count > 0) and (number_index >= 0) and (name_index >= 0) ){
+                while(contacts.moveToNext()) {
+                    name = contacts.getString(name_index)
+                    number = contacts.getString(number_index)
+                    val obj = Contact(name, number)
+                    contactArrayList.add(obj)
+                    }
+                contacts.close()
+                }
+            recyclerView = binding.recycleView
+            recyclerView.layoutManager = LinearLayoutManager(this)
+            recyclerView.setHasFixedSize(true)
+            recyclerView.adapter = MyAdapter(contactArrayList)
+
+        }
     }
     private fun checkLocationPermission() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
