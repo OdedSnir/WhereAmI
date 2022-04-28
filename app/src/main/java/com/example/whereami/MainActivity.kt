@@ -32,15 +32,52 @@ lateinit var locationString : String
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
 
-        binding.getLocationButton.setOnClickListener (){
+        binding.getLocationButton.setOnClickListener {
             // check for self permission
             checkLocationPermission()
         }
 
+        binding.getContacts.setOnClickListener {
+            checkContactPermission()
+        }
 
 
     }
+    private fun checkContactPermission() {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED){
+            Toast.makeText(this, "contact list available", Toast.LENGTH_SHORT).show()
+            // permission is allready granted
+            //getContacts()
 
+        }else{
+            requestContactPermission()
+        }
+    }
+
+
+    private fun requestContactPermission(){
+        if((ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)) or (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED)){
+            Toast.makeText(this, "you have denied permission to location", Toast.LENGTH_SHORT).show()
+            val builder = AlertDialog.Builder(this)
+            builder.setTitle("Permission needed")
+            builder.setMessage("This permission is needed to get current location and send it later on.")
+            builder.setPositiveButton("ok", DialogInterface.OnClickListener { dialogInterface, witch ->
+                ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_CONTACTS), 100)
+            })
+            builder.setNegativeButton("cancel", DialogInterface.OnClickListener { dialogInterface, witch ->
+                dialogInterface.dismiss()
+            })
+            builder.create().show()
+        }
+        else{
+            ActivityCompat.requestPermissions(this@MainActivity, arrayOf(Manifest.permission.READ_CONTACTS), 100)
+        }
+    }
+
+    private fun getContacts() {
+        TODO("Not yet implemented")
+
+    }
     private fun checkLocationPermission() {
         if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
             Toast.makeText(this, "location available", Toast.LENGTH_SHORT).show()
