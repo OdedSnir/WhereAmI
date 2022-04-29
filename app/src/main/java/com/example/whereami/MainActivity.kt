@@ -93,7 +93,7 @@ lateinit var  number: String
             if( (contacts.count > 0) and (number_index >= 0) and (name_index >= 0) ){
                 while(contacts.moveToNext()) {
                     name = contacts.getString(name_index)
-                    number = contacts.getString(number_index)
+                    number = contacts.getString(number_index) + "\u200e"
                     val obj = Contact(name, number)
                     contactArrayList.add(obj)
                     }
