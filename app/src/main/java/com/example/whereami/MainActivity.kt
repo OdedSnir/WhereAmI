@@ -102,7 +102,16 @@ lateinit var  number: String
             recyclerView = binding.recycleView
             recyclerView.layoutManager = LinearLayoutManager(this)
             recyclerView.setHasFixedSize(true)
-            recyclerView.adapter = MyAdapter(contactArrayList)
+            var adapter = MyAdapter(contactArrayList)
+            recyclerView.adapter = adapter
+            adapter.setOnClickListener(object : MyAdapter.onItemClickListener{
+                override fun onItemClick(position: Int) {
+                    var pickedContact = contactArrayList.get(position)
+
+                    Toast.makeText(this@MainActivity, "You chose ${pickedContact.name} and the number is ${pickedContact.number}.", Toast.LENGTH_SHORT).show()
+                }
+
+            })
 
         }
     }
