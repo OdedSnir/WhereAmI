@@ -2,9 +2,11 @@ package com.example.whereami
 
 import android.Manifest
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Geocoder
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -93,7 +95,7 @@ lateinit var  number: String
             if( (contacts.count > 0) and (number_index >= 0) and (name_index >= 0) ){
                 while(contacts.moveToNext()) {
                     name = contacts.getString(name_index)
-                    number = contacts.getString(number_index) + "\u200e"
+                    number = contacts.getString(number_index)
                     val obj = Contact(name, number)
                     contactArrayList.add(obj)
                     }
@@ -107,8 +109,8 @@ lateinit var  number: String
             adapter.setOnClickListener(object : MyAdapter.onItemClickListener{
                 override fun onItemClick(position: Int) {
                     var pickedContact = contactArrayList.get(position)
-
-                    Toast.makeText(this@MainActivity, "You chose ${pickedContact.name} and the number is ${pickedContact.number}.", Toast.LENGTH_SHORT).show()
+                    composeMmsMessage("Hi, I am at : " + locationString, pickedContact.number)
+                    //Toast.makeText(this@MainActivity, "You chose to send to ${pickedContact.name} that you are at ${locationString}.", Toast.LENGTH_SHORT).show()
                 }
 
             })
@@ -238,5 +240,16 @@ lateinit var  number: String
 
         }
 
+    }
+
+    fun composeMmsMessage(message: String, phoneNumber : String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            data = Uri.parse("smsto:"+phoneNumber)
+            putExtra("sms_body", message)
+
+        }
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivity(intent)
+        }
     }
 }

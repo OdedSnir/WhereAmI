@@ -30,7 +30,7 @@ class MyAdapter(private val contactsList : ArrayList<Contact>) : RecyclerView.Ad
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val currentItem = contactsList[position]
         holder.name_TextView.text = currentItem.name
-        holder.number_TextView.text = currentItem.number
+        holder.number_TextView.text = currentItem.number+ "\u200e"
     }
 
     override fun getItemCount(): Int {
